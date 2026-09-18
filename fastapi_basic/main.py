@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from pydantic import BaseModel, HttpUrl
+from typing import Optional
+import uvicorn # fastapi 내장 웹서버
 
 # fastAPI 객체 생성
 app = FastAPI()
@@ -28,8 +31,6 @@ def read_item(item_id: int, q: str | None = None):
 
     return {"item_id": item_id, "q": q}
 
-from pydantic import BaseModel, HttpUrl
-from typing import Optional
 
 # DTO : 데이터 전송 객체
 class UserCreate(BaseModel):
@@ -38,14 +39,24 @@ class UserCreate(BaseModel):
     avatar_url: Optional[str] = None
     user_fullname: Optional[str] = None
 
-@app.post("/user_info/")
+# DTO : 응답 전송 객체
+class UserResponse(BaseModel):
+    username: str
+    avatar_url: HttpUrl
+
+@app.post("/user_info/", response_model=UserResponse)
 def create_user(user: UserCreate):
     # 비지니스 로직 처리
     print(f"username: {user.username}")
     print(f"avatar_url: {user.avatar_url}")
     print(f"user_fullname: {user.user_fullname}")
 
-    return {"user":user}
+    user_info = UserResponse(
+        username = user.username,
+        avatar_url = user.avatar_url
+    )
+    return user_info
+    # return {"user":user}
 
 @app.post("/user_info/{user_id}")
 def create_user(user_id: int, q: str | None = None):

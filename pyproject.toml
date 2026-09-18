@@ -10,5 +10,6 @@ dependencies = [
     "pydentic>=0.0.1.dev3",
     "pygame>=2.6.1",
     "requests>=2.34.2",
+    "sqlalchemy>=2.0.54",
     "torch>=2.14.0",
 ]
